@@ -5,6 +5,7 @@
 		<link rel="stylesheet" href="reveal.js/css/theme/sky.css" id="theme">	
 		<script src="reveal.js/lib/js/head.min.js"></script>
 		<script src="reveal.js/js/reveal.min.js"></script>
+		<script src="qrcode.min.js"></script>
 		<script>
 			window.onload = function() {
 				Reveal.initialize({
@@ -23,6 +24,12 @@
 		</style>
 		<div class="reveal">
 			<div class="slides">
+				<section>
+					<div id="qrcode"></div>
+					<script type="text/javascript">
+					new QRCode(document.getElementById("qrcode"), "https://github.com/bryzaguy/angular-presentation");
+					</script>
+				</section>
 				<section>
 					<h2>Composition Over Layers</h2>
 					<p>Tests driving your design.</p>
