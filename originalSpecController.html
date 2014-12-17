@@ -1,0 +1,111 @@
+<html>
+	<head>
+		<title>Composition Over Layers Example</title>
+		<script src="ace.js"></script>
+		<script src="mode-javascript.js"></script>
+		<script src="theme-monokai.js"></script>
+		<script>
+
+		  window.onload = function() {
+			  window.addEditor = function (id) {
+			    if (ace) {
+			      var editor = ace.edit(id);
+			      editor.name = id;
+				    editor.setTheme("ace/theme/monokai");
+				    editor.getSession().setMode("ace/mode/javascript");
+			      editor.getSession().setTabSize(2);
+			      editor.getSession().setUseSoftTabs(true);
+			      editor.renderer.setShowPrintMargin(false);
+			      //editor.resize();
+			    }
+			  };
+
+			  var editors = document.getElementsByClassName('editor');
+
+			  for (var key in editors) {
+			  	if (editors[key].id) {
+			  		window.addEditor(editors[key].id);
+			  	}
+			  }
+		  };
+
+		</script>
+	</head>
+	<body>
+		<style type="text/css">
+	    .editor { 
+        position: block;
+        font-size: 14px;
+        height: 100%;
+        width: 100%;
+			}
+		</style>
+		<div id="specs" class="editor">
+describe('FooController', function () {
+	var service, controller, scope, defer;
+
+	beforeEach(function() {
+		service = { getAsync: function () {} };
+
+		module('myApp');
+
+		inject(function($q, $controller, $rootScope) {
+			defer = $q.defer();
+			scope = $rootScope.$new();
+			sinon.stub(service, 'getAsync').returns(defer.promise);
+
+      controller = $controller('FooController', { 
+				'$scope': scope, 
+				'fooService': service 
+      });
+		});
+	});
+
+	describe('initially', function() {
+		it ('defaults total to 0', function () {
+			expect(scope.total).toBe(0);
+		});
+
+		it ('defaults description to empty', function () {
+			expect(scope.description).toBe('');
+		});
+	});
+
+	describe('when no service data is retrieved', function () {
+		beforeEach(function () {
+			defer.resolve(null);
+			scope.$digest();
+		});
+
+		it ('returns 0 for total', function () {
+			expect(scope.total).toBe(0);
+		});
+
+		it ('returns empty for description', function () {
+			expect(scope.description).toBe('');
+		});
+	});
+
+	describe('when service data is retrieved', function() {
+		var expected = { 
+			total: 23, 
+			description: 'someDescription' 
+		};
+
+		beforeEach(function () {
+			defer.resolve(expected);
+			scope.$digest();
+		});
+
+		it ('returns data total for total', function () {
+			expect(scope.total).toBe(expected.total);
+		});
+
+		it ('returns data description for description', function () {
+			expect(scope.description).toBe(expected.description);
+		});
+	});
+});
+		</div>
+	</body>
+</html>

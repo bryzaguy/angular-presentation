@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<title>Composition Over Layers</title>
+		<link rel="stylesheet" href="reveal.js/css/reveal.min.css">
+		<link rel="stylesheet" href="reveal.js/css/theme/sky.css" id="theme">	
+		<script src="reveal.js/lib/js/head.min.js"></script>
+		<script src="reveal.js/js/reveal.min.js"></script>
+		<script>
+			window.onload = function() {
+				Reveal.initialize({
+					width: '90%',
+					height: '90%'
+				});
+			};
+		</script>
+	</head>
+	<body>
+		<style type="text/css">
+	    .code { 
+        height: 80%;
+        width: 100%;
+			}
+		</style>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h2>Composition Over Layers</h2>
+					<p>Tests driving your design.</p>
+				</section>
+				<section>
+					<section>
+						<h1>TDD</h1>
+						<p>Unit testing, red-green-refactor.</p>
+					</section>
+					<section>
+						<h1>Test Doubles</h1>
+						<p>Stub, spy, mock, fake.</p>
+					</section>
+					<section>
+						<h2>Classic vs Mockist TDD</h2>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Example Code</h2>
+						<iframe class="code" src="originalCode.html"></iframe>
+					</section>
+					<section>
+						<h3>Service Spec</h3>
+						<iframe class="code" src="originalSpecService.html"></iframe>
+					</section>
+					<section>
+						<h3>Ctrl Spec</h3>
+						<iframe class="code" src="originalSpecController.html"></iframe>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>What should we do?</h2>
+					</section>
+					<section>
+						<h2>Layers</h2>
+						<p>Requires test doubles, unclear roles.</p>
+					</section>
+					<section>
+						<h2>Current State</h2>
+						<ul>
+							<li>Service tests url that returns data</li>
+							<li>Controller all about order data</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Let's Refactor</h2>
+						<p>Same behavior, different arrangement.</p>
+					</section>
+					<section>
+						<h2>Strategy: Push Promise Out</h2>
+						<p>Skinny controller, null object pattern.</p>
+					</section>
+					<section>
+						<h2>Add Order Model</h2>
+						<p>Order can care about its own data.</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Order Model</h2>
+						<iframe class="code" src="refactoredCodeOrder.html"></iframe>
+					</section>
+					<section>
+						<h2>Refactored Code</h2>
+						<iframe class="code" src="refactoredCode.html"></iframe>
+					</section>
+					<section>
+						<h2>Service Spec</h2>
+						<iframe class="code" src="refactoredSpecService.html"></iframe>
+					</section>
+					<section>
+						<h2>Ctlr Spec</h2>
+						<iframe class="code" src="refactoredSpecController.html"></iframe>
+					</section>
+					<section>
+						<h2>Order Spec</h2>
+						<iframe class="code" src="refactoredSpecOrder.html"></iframe>
+					</section>
+				</section>
+				<section>
+					<h2>Results</h2>
+				</section>
+				<section>
+					<section>
+						<h3>First Specs</h3>
+						<iframe class="code" src="results.html"></iframe>
+					</section>
+					<section>
+						<h3>Refactored Specs</h3>
+						<iframe class="code" src="refactored.html"></iframe>
+					</section>
+					<section>
+						<h1>Better design</h1>
+						<p>Driven by tests.</p>
+					</section>
+				</section>
+				<section>
+					<h2>Questions?</h2>
+				</section>
+			</div>
+		</div>
+	</body>
+</html>

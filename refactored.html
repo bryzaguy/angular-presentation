@@ -1,0 +1,126 @@
+<html>
+	<head>
+		<title>Test Results</title>
+
+		<script src="jasmine/jasmine.js"></script>
+		<script src="jasmine/jasmine-html.js"></script>
+		<script src="jasmine/boot.js"></script>
+		<link rel="stylesheet" href="jasmine/jasmine.css">
+
+		<script src="angular.min.js"></script>
+		<script src="angular-mocks.js"></script>
+		<script>
+		  
+	  (function (angular) {
+	    // Create module
+			function FooController($scope, provider) {
+				$scope.order = provider.order;
+			}
+
+			function fooService($http, Order) {
+				var order = this.order = new Order();
+
+				$http.get('someurl').then(function(result) {
+					Order.call(order, result.data);
+				});
+			}
+
+			function Order(data) {
+				this.total = 0;
+				this.description = '';
+
+				if (data) {
+					this.total = data.total;
+					this.description = data.description;
+				}
+			}
+
+	    var myApp = angular.module('myApp', []);
+			myApp.value('Order', Order);
+	    myApp.service('fooService', ['$http', 'Order', fooService]);
+	    myApp.controller('FooController', ['$scope', 'fooService', FooController]);
+
+		})(angular);
+
+		// ---SPECS-------------------------
+
+
+			describe('fooService', function () {	
+				var service, httpBackend, Order;
+
+				beforeEach(function() {
+					module('myApp');
+
+					inject(function(fooService, $httpBackend, _Order_) {
+						service = fooService;
+			      httpBackend = $httpBackend;
+			      Order = _Order_;
+					});
+				});
+
+				it ('initially has default order', function () {
+					expect(service.order instanceof Order).toBe(true);
+				});
+
+				it ('updates order with http data', function () {
+			    var expected = {total:23,description:"test"};
+			    
+			    httpBackend.expectGET('someurl').respond(expected);
+			    httpBackend.flush();
+
+					expect(service.order).toEqual(new Order(expected));
+				});
+			});
+
+			describe('FooController', function () {
+				it ('sets order on scope from service', function () {
+					var scope = {}, service = { order: {} };
+					module('myApp');
+
+					inject(function($controller) {
+						$controller('FooController', {
+							$scope: scope,
+							fooService: service
+						});
+					});
+
+					expect(scope.order).toBe(service.order);
+				});
+			});
+
+			describe('Order', function () {
+				var Order;
+
+				beforeEach(function () {
+					module('myApp');
+					inject(function (_Order_) {
+			      Order = _Order_;
+					});
+				});
+
+				describe('default', function () {
+					it('total returns 0', function () {
+						expect(new Order().total).toBe(0);
+					});
+
+					it('description returns empty', function () {
+						expect(new Order().description).toBe('');
+					});
+				});
+
+				describe('with data', function () {
+					it('description returns data description', function () {
+						expect(new Order({description:'desc'}).description).toBe('desc');
+					});
+					
+					it('total returns data total', function () {
+						expect(new Order({total:24}).total).toBe(24);
+					});
+				});
+			});
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

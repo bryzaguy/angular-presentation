@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<title>Test Results</title>
+
+		<script src="jasmine/jasmine.js"></script>
+		<script src="jasmine/jasmine-html.js"></script>
+		<script src="jasmine/boot.js"></script>
+		<link rel="stylesheet" href="jasmine/jasmine.css">
+
+		<script src="angular.min.js"></script>
+		<script src="angular-mocks.js"></script>
+		<script src="sinon.min.js"></script>
+		<script src="jasmine-sinon.js"></script>
+		<script>
+		  
+	  (function (angular) {
+	    // Create module
+			function FooController($scope, fooService) {
+			  $scope.total = 0;
+				$scope.description = '';
+
+			  fooService.getAsync().then(function(result) {
+					if (result) {
+						$scope.total = result.total;
+						$scope.description = result.description;
+					}
+			  });
+			}
+	    
+	    function fooService($http) {
+        var orderPromise = $http.get('someurl');
+    
+        this.getAsync = function () {
+          return orderPromise.then(function(result) {
+          	return result.data;
+          });
+        };
+	    }
+
+	    var myApp = angular.module('myApp', []);
+	    myApp.service('fooService', ['$http', fooService]);
+	    myApp.controller('FooController', ['$scope', 'fooService', FooController]);
+
+		})(angular);
+
+		// ---SPECS-------------------------
+
+		describe('fooService', function () {
+			var service, httpBackend;
+
+			beforeEach(function() {
+		    module('myApp');
+
+				inject(function(fooService, $httpBackend) {
+			    service = fooService;
+		      httpBackend = $httpBackend;
+				});
+			});
+
+			it ('getAsync returns resolved http order data', function () {
+	      var expected = {};
+	      httpBackend.expectGET('someurl').respond(expected);
+	      var onSuccess = jasmine.createSpy(); // sinon.spy();
+
+				service.getAsync().then(onSuccess);
+	      httpBackend.flush();
+
+	      expect(onSuccess).toHaveBeenCalledWith(expected);
+			});
+		});
+
+		describe('FooController', function () {
+			var service, controller, scope, defer;
+
+			beforeEach(function() {
+				service = { getAsync: function () {} };
+
+				module('myApp');
+
+				inject(function($q, $controller, $rootScope) {
+					defer = $q.defer();
+					scope = $rootScope.$new();
+					sinon.stub(service, 'getAsync').returns(defer.promise);
+
+		      controller = $controller('FooController', { 
+		      	'$scope': scope, 
+		      	'fooService': service 
+		      });
+				});
+			});
+
+			describe('initially', function() {
+				it ('defaults total to 0', function () {
+					expect(scope.total).toBe(0);
+				});
+
+				it ('defaults description to empty', function () {
+					expect(scope.description).toBe('');
+				});
+			});
+
+			describe('when no service data is retrieved', function () {
+				beforeEach(function () {
+					defer.resolve(null);
+					scope.$digest();
+				});
+
+				it ('returns 0 for total', function () {
+					expect(scope.total).toBe(0);
+				});
+
+				it ('returns empty for description', function () {
+					expect(scope.description).toBe('');
+				});
+			});
+
+			describe('when service data is retrieved', function() {
+				var expected = { 
+					total: 23, 
+					description: 'someDescription' 
+				};
+
+				beforeEach(function () {
+					defer.resolve(expected);
+					scope.$digest();
+				});
+
+				it ('returns data total for total', function () {
+					expect(scope.total).toBe(expected.total);
+				});
+
+				it ('returns data description for description', function () {
+					expect(scope.description).toBe(expected.description);
+				});
+			});
+		});
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
